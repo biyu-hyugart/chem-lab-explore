@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attempts: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          final_state: Json | null
+          id: string
+          module_id: string
+          score: number
+          steps_log: Json
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          final_state?: Json | null
+          id?: string
+          module_id: string
+          score?: number
+          steps_log?: Json
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          final_state?: Json | null
+          id?: string
+          module_id?: string
+          score?: number
+          steps_log?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempts_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      modules: {
+        Row: {
+          created_at: string
+          description: string
+          difficulty: string
+          id: string
+          materials: Json
+          objective: string
+          order_index: number
+          steps: Json
+          target: Json
+          theory: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          difficulty: string
+          id: string
+          materials: Json
+          objective: string
+          order_index?: number
+          steps: Json
+          target: Json
+          theory: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          materials?: Json
+          objective?: string
+          order_index?: number
+          steps?: Json
+          target?: Json
+          theory?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
