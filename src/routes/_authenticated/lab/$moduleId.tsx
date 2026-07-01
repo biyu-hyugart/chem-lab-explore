@@ -61,7 +61,7 @@ function LabPage() {
   const [pendingAmount, setPendingAmount] = useState<number>(0);
   const [saving, setSaving] = useState(false);
 
-  const steps: Step[] = useMemo(() => (moduleQ.data?.steps as Step[]) ?? [], [moduleQ.data]);
+  const steps: Step[] = useMemo(() => (moduleQ.data?.steps as unknown as Step[]) ?? [], [moduleQ.data]);
   const currentStep = steps[completedStepIds.length];
   const finished = currentStep === undefined && steps.length > 0;
 
@@ -112,8 +112,8 @@ function LabPage() {
         user_id: user.id,
         module_id: moduleId,
         score,
-        steps_log: logs,
-        final_state: beaker,
+        steps_log: logs as unknown as never,
+        final_state: beaker as unknown as never,
         completed: completedStepIds.length === steps.length,
         completed_at: new Date().toISOString(),
       })

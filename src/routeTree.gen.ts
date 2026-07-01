@@ -14,6 +14,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedLabModuleIdRouteImport } from './routes/_authenticated/lab/$moduleId'
+import { Route as AuthenticatedLabModuleIdHasilRouteImport } from './routes/_authenticated/lab/$moduleId/hasil'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -39,18 +41,34 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLabModuleIdRoute =
+  AuthenticatedLabModuleIdRouteImport.update({
+    id: '/lab/$moduleId',
+    path: '/lab/$moduleId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLabModuleIdHasilRoute =
+  AuthenticatedLabModuleIdHasilRouteImport.update({
+    id: '/hasil',
+    path: '/hasil',
+    getParentRoute: () => AuthenticatedLabModuleIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/lab/$moduleId': typeof AuthenticatedLabModuleIdRouteWithChildren
+  '/lab/$moduleId/hasil': typeof AuthenticatedLabModuleIdHasilRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/lab/$moduleId': typeof AuthenticatedLabModuleIdRouteWithChildren
+  '/lab/$moduleId/hasil': typeof AuthenticatedLabModuleIdHasilRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +77,26 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/_authenticated/lab/$moduleId': typeof AuthenticatedLabModuleIdRouteWithChildren
+  '/_authenticated/lab/$moduleId/hasil': typeof AuthenticatedLabModuleIdHasilRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/api/chat'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/api/chat'
+    | '/lab/$moduleId'
+    | '/lab/$moduleId/hasil'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/api/chat'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/api/chat'
+    | '/lab/$moduleId'
+    | '/lab/$moduleId/hasil'
   id:
     | '__root__'
     | '/'
@@ -72,6 +104,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/api/chat'
+    | '/_authenticated/lab/$moduleId'
+    | '/_authenticated/lab/$moduleId/hasil'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,15 +152,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/lab/$moduleId': {
+      id: '/_authenticated/lab/$moduleId'
+      path: '/lab/$moduleId'
+      fullPath: '/lab/$moduleId'
+      preLoaderRoute: typeof AuthenticatedLabModuleIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lab/$moduleId/hasil': {
+      id: '/_authenticated/lab/$moduleId/hasil'
+      path: '/hasil'
+      fullPath: '/lab/$moduleId/hasil'
+      preLoaderRoute: typeof AuthenticatedLabModuleIdHasilRouteImport
+      parentRoute: typeof AuthenticatedLabModuleIdRoute
+    }
   }
 }
 
+interface AuthenticatedLabModuleIdRouteChildren {
+  AuthenticatedLabModuleIdHasilRoute: typeof AuthenticatedLabModuleIdHasilRoute
+}
+
+const AuthenticatedLabModuleIdRouteChildren: AuthenticatedLabModuleIdRouteChildren =
+  {
+    AuthenticatedLabModuleIdHasilRoute: AuthenticatedLabModuleIdHasilRoute,
+  }
+
+const AuthenticatedLabModuleIdRouteWithChildren =
+  AuthenticatedLabModuleIdRoute._addFileChildren(
+    AuthenticatedLabModuleIdRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLabModuleIdRoute: typeof AuthenticatedLabModuleIdRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLabModuleIdRoute: AuthenticatedLabModuleIdRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
