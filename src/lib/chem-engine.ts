@@ -31,7 +31,7 @@ export interface BeakerState {
 export const EMPTY_BEAKER: BeakerState = {
   contents: {},
   totalVolumeMl: 0,
-  color: "#0ea5e910",
+  color: "#38bdf8",
   stirred: false,
   recorded: false,
   addOrder: [],
