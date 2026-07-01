@@ -237,7 +237,7 @@ function ReagentBottle({ x, color, label, onClick, highlight }: { x: number; col
         color="#0f172a"
         anchorX="center"
         anchorY="middle"
-        font-weight="bold"
+        fontWeight="bold"
       >
         {label}
       </Text>
