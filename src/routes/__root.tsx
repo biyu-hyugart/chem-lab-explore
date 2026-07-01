@@ -92,6 +92,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "ChemXR — Laboratorium Kimia Virtual" },
+      { name: "description", content: "Virtual Lab Chem is a web-based virtual chemistry lab for interactive experiments." },
+      { property: "og:description", content: "Virtual Lab Chem is a web-based virtual chemistry lab for interactive experiments." },
+      { name: "twitter:description", content: "Virtual Lab Chem is a web-based virtual chemistry lab for interactive experiments." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc93abca-8842-4cef-b2c4-02063f7c5a0b/id-preview-f7088378--6d10a13c-8a34-4a13-bd4c-07dda49cf7b5.lovable.app-1782919394450.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc93abca-8842-4cef-b2c4-02063f7c5a0b/id-preview-f7088378--6d10a13c-8a34-4a13-bd4c-07dda49cf7b5.lovable.app-1782919394450.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
