@@ -221,7 +221,15 @@ function LabPage() {
         {/* CENTER: 3D scene + panel aksi */}
         <section className="flex flex-col gap-4">
           <div className="glass-panel h-[420px] overflow-hidden">
-            <LabScene state={beaker} />
+            <LabScene
+              state={beaker}
+              activeReagent={pendingReagent}
+              onReagentClick={(id) => {
+                const rid = id as ReagentId;
+                setPendingReagent(rid);
+                setPendingAmount(REAGENTS[rid].defaultAmount);
+              }}
+            />
           </div>
           <div className="glass-panel p-4">
             <div className="mb-3 flex items-center gap-2">
