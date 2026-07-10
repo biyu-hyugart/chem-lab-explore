@@ -94,8 +94,8 @@ function Bubbles({ intensity, maxY }: { intensity: number; maxY: number }) {
 // ===== Steam / smoke wisps (rising above beaker) =====
 function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: number; color?: string }) {
   const groupRef = useRef<THREE.Group>(null);
-  const particles = useRef<{ x: number; y: number; z: number; life: number; scale: number }[]>([]);
-  const CAP = 30;
+  const particles = useRef<{ x: number; y: number; z: number; life: number; scale: number; vx: number; vz: number }[]>([]);
+  const CAP = 80;
   const spawnAcc = useRef(0);
 
   useFrame((_, delta) => {
