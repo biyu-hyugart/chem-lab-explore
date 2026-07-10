@@ -617,6 +617,8 @@ export function LabScene({
   const [lastAdded, setLastAdded] = useState<ReagentId | null>(null);
   const [pourTrigger, setPourTrigger] = useState(0);
   const [splashTrigger, setSplashTrigger] = useState(0);
+  const [sparkTrigger, setSparkTrigger] = useState(0);
+  const [shockTrigger, setShockTrigger] = useState(0);
 
   useEffect(() => {
     const kind = detectReaction(prevState.current, state);
