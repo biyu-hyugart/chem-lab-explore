@@ -20,6 +20,7 @@ function Landing() {
           <a href="#fitur" className="hover:text-foreground">Fitur</a>
           <a href="#cara-kerja" className="hover:text-foreground">Cara Kerja</a>
           <a href="#modul" className="hover:text-foreground">Modul</a>
+          <Link to="/tentang" className="hover:text-foreground">Tentang</Link>
         </nav>
         <div className="flex gap-2">
           <Button variant="ghost" asChild>
