@@ -99,21 +99,26 @@ function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: numb
   const spawnAcc = useRef(0);
 
   useFrame((_, delta) => {
-    spawnAcc.current += delta * intensity * 15;
+    spawnAcc.current += delta * intensity * 40;
     while (spawnAcc.current > 1 && particles.current.length < CAP) {
       spawnAcc.current -= 1;
+      const a = Math.random() * Math.PI * 2;
       particles.current.push({
         x: (Math.random() - 0.5) * 0.6,
         y: 0,
         z: (Math.random() - 0.5) * 0.6,
+        vx: Math.cos(a) * 0.15,
+        vz: Math.sin(a) * 0.15,
         life: 1,
-        scale: 0.2 + Math.random() * 0.3,
+        scale: 0.25 + Math.random() * 0.4,
       });
     }
     particles.current = particles.current.filter((p) => {
-      p.y += delta * 0.8;
-      p.life -= delta * 0.5;
-      p.scale += delta * 0.4;
+      p.y += delta * (1.2 + intensity * 0.8);
+      p.x += p.vx * delta;
+      p.z += p.vz * delta;
+      p.life -= delta * 0.4;
+      p.scale += delta * 0.6;
       return p.life > 0;
     });
     if (!groupRef.current) return;
