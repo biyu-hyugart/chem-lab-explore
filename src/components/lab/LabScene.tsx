@@ -453,10 +453,15 @@ function BeakerMesh({
           <Bubbles intensity={bubbleIntensity} maxY={fillHeight} />
           <SplashRing trigger={splashTrigger} y={fillHeight - 0.72} color={splashColor} />
           <Droplets trigger={splashTrigger} y={fillHeight - 0.72} color={splashColor} />
+          <Sparks trigger={sparkTrigger} y={fillHeight - 0.7} color={sparkColor} />
+          <Shockwave trigger={shockTrigger} y={fillHeight - 0.7} color={sparkColor} />
+          <FoamOverflow intensity={foamIntensity} y={fillHeight - 0.75} color={displayColor} />
         </>
       )}
       {/* steam ABOVE liquid */}
       <Steam intensity={steamIntensity} y={fillHeight - 0.6} />
+      {steamIntensity > 0.4 && <Steam intensity={steamIntensity * 0.7} y={fillHeight - 0.4} color="#e2e8f0" />}
+      {/* solid base */}
       {/* solid base */}
       <mesh position={[0, -0.8, 0]}>
         <cylinderGeometry args={[0.76, 0.76, 0.04, 48]} />
