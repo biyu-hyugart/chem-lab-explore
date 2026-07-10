@@ -59,9 +59,9 @@ export function ChemAssistant({ context }: Props) {
             </p>
             <div className="mt-2 space-y-1.5">
               {[
-                "Apa langkah pertama yang harus saya lakukan?",
-                "Kenapa harus tambah asam ke air, bukan sebaliknya?",
-                "Bagaimana menghitung massa NaCl untuk 100 mL 0,1 M?",
+                "Apa hasil reaksi HCl + NaOH?",
+                "Apa kegunaan NaCl dalam kehidupan sehari-hari?",
+                "Bagaimana sifat dan kandungan indikator PP?",
               ].map((q) => (
                 <button
                   key={q}
