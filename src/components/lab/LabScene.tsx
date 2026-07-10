@@ -639,6 +639,8 @@ export function LabScene({
   const [glowIntensity, setGlowIntensity] = useState(0);
   const [stirIntensity, setStirIntensity] = useState(0);
   const [flashColor, setFlashColor] = useState<THREE.Color | null>(null);
+  const [foamIntensity, setFoamIntensity] = useState(0);
+  const [sparkColor, setSparkColor] = useState<THREE.Color>(() => new THREE.Color("#ffffff"));
 
   // React to reaction
   useEffect(() => {
