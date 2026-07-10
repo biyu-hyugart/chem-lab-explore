@@ -643,19 +643,26 @@ export function LabScene({
   // React to reaction
   useEffect(() => {
     if (reaction === "none") return;
-    // Configure per-reaction effect profile
-    const profile: Record<Exclude<ReactionKind, "none">, { bubbles: number; steam: number; glow: number; duration: number; flash: string | null }> = {
-      dissolve:   { bubbles: 0.4, steam: 0.0, glow: 0.5, duration: 2500, flash: null },
-      fizz:       { bubbles: 1.0, steam: 0.3, glow: 0.7, duration: 3000, flash: null },
-      neutralize: { bubbles: 0.9, steam: 0.9, glow: 0.9, duration: 3500, flash: "#fef08a" },
-      indicator:  { bubbles: 0.5, steam: 0.2, glow: 1.0, duration: 3000, flash: "#f472b6" },
-      splash:     { bubbles: 0.3, steam: 0.0, glow: 0.4, duration: 1500, flash: null },
+    // Configure per-reaction effect profile (dramatic real-life feel)
+    const profile: Record<Exclude<ReactionKind, "none">, { bubbles: number; steam: number; glow: number; foam: number; duration: number; flash: string | null; spark: boolean; shock: boolean; sparkColor: string }> = {
+      dissolve:   { bubbles: 0.6, steam: 0.1, glow: 0.5, foam: 0.0, duration: 2800, flash: null,      spark: false, shock: false, sparkColor: "#ffffff" },
+      fizz:       { bubbles: 1.8, steam: 0.6, glow: 0.8, foam: 0.4, duration: 3500, flash: "#fef3c7", spark: false, shock: true,  sparkColor: "#fde68a" },
+      neutralize: { bubbles: 2.2, steam: 1.4, glow: 1.2, foam: 0.9, duration: 4200, flash: "#fef08a", spark: true,  shock: true,  sparkColor: "#fbbf24" },
+      indicator:  { bubbles: 0.9, steam: 0.3, glow: 1.4, foam: 0.2, duration: 3200, flash: "#f472b6", spark: true,  shock: false, sparkColor: "#ec4899" },
+      splash:     { bubbles: 0.5, steam: 0.0, glow: 0.4, foam: 0.0, duration: 1500, flash: null,      spark: false, shock: false, sparkColor: "#ffffff" },
     };
     const p = profile[reaction];
     setBubbleIntensity(p.bubbles);
     setSteamIntensity(p.steam);
     setGlowIntensity(p.glow);
+    setFoamIntensity(p.foam);
     if (p.flash) setFlashColor(new THREE.Color(p.flash));
+    setSparkColor(new THREE.Color(p.sparkColor));
+    // Trigger burst effects slightly delayed to line up with landing
+    setTimeout(() => {
+      if (p.spark) setSparkTrigger((n) => n + 1);
+      if (p.shock) setShockTrigger((n) => n + 1);
+    }, 520);
     const start = performance.now();
     let raf: number;
     const tick = () => {
@@ -664,6 +671,7 @@ export function LabScene({
       setBubbleIntensity(p.bubbles * k);
       setSteamIntensity(p.steam * k);
       setGlowIntensity(p.glow * k);
+      setFoamIntensity(p.foam * Math.max(0, k - 0.3));
       if (k > 0) raf = requestAnimationFrame(tick);
       else setFlashColor(null);
     };
