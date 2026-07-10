@@ -50,17 +50,17 @@ function Bubbles({ intensity, maxY }: { intensity: number; maxY: number }) {
   const CAP = 220;
 
   useFrame((_, delta) => {
-    spawnAcc.current += delta * intensity * 40;
+    spawnAcc.current += delta * intensity * 120;
     while (spawnAcc.current > 1 && bubblesRef.current.length < CAP) {
       spawnAcc.current -= 1;
       const angle = Math.random() * Math.PI * 2;
-      const r = Math.random() * 0.55;
+      const r = Math.random() * 0.6;
       bubblesRef.current.push({
         x: Math.cos(angle) * r,
         z: Math.sin(angle) * r,
         y: -0.7 + Math.random() * 0.1,
-        speed: 0.5 + Math.random() * 1.2,
-        size: 0.04 + Math.random() * 0.08,
+        speed: 0.8 + Math.random() * 1.8,
+        size: 0.05 + Math.random() * 0.12,
       });
     }
     bubblesRef.current = bubblesRef.current.filter((b) => {
