@@ -388,7 +388,7 @@ function LiquidSurface({ y, radius, color, stirring }: { y: number; radius: numb
 
 // ===== Beaker =====
 function BeakerMesh({
-  state, bubbleIntensity, steamIntensity, splashTrigger, splashColor, glowIntensity, stirIntensity, flashColor,
+  state, bubbleIntensity, steamIntensity, splashTrigger, splashColor, glowIntensity, stirIntensity, flashColor, sparkTrigger, sparkColor, shockTrigger, foamIntensity,
 }: {
   state: BeakerState;
   bubbleIntensity: number;
@@ -398,6 +398,10 @@ function BeakerMesh({
   glowIntensity: number;
   stirIntensity: number;
   flashColor: THREE.Color | null;
+  sparkTrigger: number;
+  sparkColor: THREE.Color;
+  shockTrigger: number;
+  foamIntensity: number;
 }) {
   const targetHeight = Math.min(1.4, (state.totalVolumeMl / 100) * 1.4);
   const [fillHeight, setFillHeight] = useState(targetHeight);
