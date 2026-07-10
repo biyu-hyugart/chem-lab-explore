@@ -745,6 +745,10 @@ export function LabScene({
         glowIntensity={glowIntensity}
         stirIntensity={stirIntensity}
         flashColor={flashColor}
+        sparkTrigger={sparkTrigger}
+        sparkColor={sparkColor}
+        shockTrigger={shockTrigger}
+        foamIntensity={foamIntensity}
       />
       {bottles.map((b) => (
         <ReagentBottle
