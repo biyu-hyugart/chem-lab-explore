@@ -129,7 +129,7 @@ function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: numb
         m.position.set(p.x, y + p.y, p.z);
         m.scale.setScalar(p.scale);
         const mat = m.material as THREE.MeshBasicMaterial;
-        mat.opacity = Math.max(0, p.life) * 0.35;
+        mat.opacity = Math.max(0, p.life) * 0.65;
         m.visible = true;
       } else m.visible = false;
     });
@@ -138,8 +138,135 @@ function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: numb
     <group ref={groupRef}>
       {Array.from({ length: CAP }).map((_, i) => (
         <mesh key={i} visible={false}>
-          <sphereGeometry args={[0.15, 8, 8]} />
+          <sphereGeometry args={[0.22, 8, 8]} />
           <meshBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// ===== Sparks (bright fast-fading points for explosive reactions) =====
+function Sparks({ trigger, y, color }: { trigger: number; y: number; color: THREE.Color }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const sparks = useRef<{ x: number; y: number; z: number; vx: number; vy: number; vz: number; life: number }[]>([]);
+
+  useEffect(() => {
+    if (trigger <= 0) return;
+    for (let i = 0; i < 60; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const el = Math.random() * Math.PI * 0.5;
+      const sp = 1.5 + Math.random() * 2.5;
+      sparks.current.push({
+        x: 0, y: 0, z: 0,
+        vx: Math.cos(a) * Math.cos(el) * sp,
+        vy: Math.sin(el) * sp + 1,
+        vz: Math.sin(a) * Math.cos(el) * sp,
+        life: 0.6 + Math.random() * 0.4,
+      });
+    }
+  }, [trigger]);
+
+  useFrame((_, delta) => {
+    sparks.current = sparks.current.filter((s) => {
+      s.vy -= delta * 4;
+      s.x += s.vx * delta;
+      s.y += s.vy * delta;
+      s.z += s.vz * delta;
+      s.life -= delta * 1.5;
+      return s.life > 0;
+    });
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const s = sparks.current[i];
+      const m = child as THREE.Mesh;
+      if (s) {
+        m.position.set(s.x, y + s.y, s.z);
+        const scl = Math.max(0.1, s.life) * 0.8;
+        m.scale.setScalar(scl);
+        (m.material as THREE.MeshBasicMaterial).opacity = Math.max(0, s.life);
+        m.visible = true;
+      } else m.visible = false;
+    });
+  });
+  return (
+    <group ref={groupRef}>
+      {Array.from({ length: 80 }).map((_, i) => (
+        <mesh key={i} visible={false}>
+          <sphereGeometry args={[0.04, 6, 6]} />
+          <meshBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// ===== Shockwave (expanding ring for explosive reactions) =====
+function Shockwave({ trigger, y, color }: { trigger: number; y: number; color: THREE.Color }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const start = useRef(0);
+  const active = useRef(false);
+  useEffect(() => {
+    if (trigger > 0) { start.current = performance.now(); active.current = true; }
+  }, [trigger]);
+  useFrame(() => {
+    if (!meshRef.current || !active.current) return;
+    const t = (performance.now() - start.current) / 900;
+    if (t > 1) { meshRef.current.visible = false; active.current = false; return; }
+    meshRef.current.visible = true;
+    const s = 0.3 + t * 4;
+    meshRef.current.scale.set(s, s, s);
+    (meshRef.current.material as THREE.MeshBasicMaterial).opacity = (1 - t) * 0.9;
+  });
+  return (
+    <mesh ref={meshRef} position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+      <ringGeometry args={[0.3, 0.5, 48]} />
+      <meshBasicMaterial color={color} transparent opacity={0} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+// ===== Foam overflow (frothy bubbles spilling over beaker rim) =====
+function FoamOverflow({ intensity, y, color }: { intensity: number; y: number; color: THREE.Color }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const foam = useRef<{ ang: number; r: number; y: number; vy: number; life: number; size: number }[]>([]);
+  const spawnAcc = useRef(0);
+  const CAP = 120;
+  useFrame((_, delta) => {
+    spawnAcc.current += delta * intensity * 60;
+    while (spawnAcc.current > 1 && foam.current.length < CAP) {
+      spawnAcc.current -= 1;
+      const ang = Math.random() * Math.PI * 2;
+      foam.current.push({
+        ang, r: 0.72 + Math.random() * 0.05,
+        y: 0, vy: -0.4 - Math.random() * 0.6,
+        life: 1, size: 0.08 + Math.random() * 0.1,
+      });
+    }
+    foam.current = foam.current.filter((f) => {
+      f.vy -= delta * 1.5;
+      f.y += f.vy * delta;
+      f.r += delta * 0.15;
+      f.life -= delta * 0.6;
+      return f.life > 0 && f.y > -1.5;
+    });
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const f = foam.current[i];
+      const m = child as THREE.Mesh;
+      if (f) {
+        m.position.set(Math.cos(f.ang) * f.r, y + f.y, Math.sin(f.ang) * f.r);
+        m.scale.setScalar(f.size);
+        m.visible = true;
+      } else m.visible = false;
+    });
+  });
+  return (
+    <group ref={groupRef}>
+      {Array.from({ length: CAP }).map((_, i) => (
+        <mesh key={i} visible={false}>
+          <sphereGeometry args={[1, 8, 8]} />
+          <meshPhysicalMaterial color={color} transparent opacity={0.85} roughness={0.3} transmission={0.4} />
         </mesh>
       ))}
     </group>
