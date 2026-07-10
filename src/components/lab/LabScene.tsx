@@ -47,7 +47,7 @@ function Bubbles({ intensity, maxY }: { intensity: number; maxY: number }) {
   const bubblesRef = useRef<Bubble[]>([]);
   const groupRef = useRef<THREE.Group>(null);
   const spawnAcc = useRef(0);
-  const CAP = 80;
+  const CAP = 220;
 
   useFrame((_, delta) => {
     spawnAcc.current += delta * intensity * 40;
