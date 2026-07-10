@@ -47,20 +47,20 @@ function Bubbles({ intensity, maxY }: { intensity: number; maxY: number }) {
   const bubblesRef = useRef<Bubble[]>([]);
   const groupRef = useRef<THREE.Group>(null);
   const spawnAcc = useRef(0);
-  const CAP = 80;
+  const CAP = 220;
 
   useFrame((_, delta) => {
-    spawnAcc.current += delta * intensity * 40;
+    spawnAcc.current += delta * intensity * 120;
     while (spawnAcc.current > 1 && bubblesRef.current.length < CAP) {
       spawnAcc.current -= 1;
       const angle = Math.random() * Math.PI * 2;
-      const r = Math.random() * 0.55;
+      const r = Math.random() * 0.6;
       bubblesRef.current.push({
         x: Math.cos(angle) * r,
         z: Math.sin(angle) * r,
         y: -0.7 + Math.random() * 0.1,
-        speed: 0.5 + Math.random() * 1.2,
-        size: 0.04 + Math.random() * 0.08,
+        speed: 0.8 + Math.random() * 1.8,
+        size: 0.05 + Math.random() * 0.12,
       });
     }
     bubblesRef.current = bubblesRef.current.filter((b) => {
@@ -94,26 +94,31 @@ function Bubbles({ intensity, maxY }: { intensity: number; maxY: number }) {
 // ===== Steam / smoke wisps (rising above beaker) =====
 function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: number; color?: string }) {
   const groupRef = useRef<THREE.Group>(null);
-  const particles = useRef<{ x: number; y: number; z: number; life: number; scale: number }[]>([]);
-  const CAP = 30;
+  const particles = useRef<{ x: number; y: number; z: number; life: number; scale: number; vx: number; vz: number }[]>([]);
+  const CAP = 80;
   const spawnAcc = useRef(0);
 
   useFrame((_, delta) => {
-    spawnAcc.current += delta * intensity * 15;
+    spawnAcc.current += delta * intensity * 40;
     while (spawnAcc.current > 1 && particles.current.length < CAP) {
       spawnAcc.current -= 1;
+      const a = Math.random() * Math.PI * 2;
       particles.current.push({
         x: (Math.random() - 0.5) * 0.6,
         y: 0,
         z: (Math.random() - 0.5) * 0.6,
+        vx: Math.cos(a) * 0.15,
+        vz: Math.sin(a) * 0.15,
         life: 1,
-        scale: 0.2 + Math.random() * 0.3,
+        scale: 0.25 + Math.random() * 0.4,
       });
     }
     particles.current = particles.current.filter((p) => {
-      p.y += delta * 0.8;
-      p.life -= delta * 0.5;
-      p.scale += delta * 0.4;
+      p.y += delta * (1.2 + intensity * 0.8);
+      p.x += p.vx * delta;
+      p.z += p.vz * delta;
+      p.life -= delta * 0.4;
+      p.scale += delta * 0.6;
       return p.life > 0;
     });
     if (!groupRef.current) return;
@@ -124,7 +129,7 @@ function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: numb
         m.position.set(p.x, y + p.y, p.z);
         m.scale.setScalar(p.scale);
         const mat = m.material as THREE.MeshBasicMaterial;
-        mat.opacity = Math.max(0, p.life) * 0.35;
+        mat.opacity = Math.max(0, p.life) * 0.65;
         m.visible = true;
       } else m.visible = false;
     });
@@ -133,8 +138,135 @@ function Steam({ intensity, y, color = "#f8fafc" }: { intensity: number; y: numb
     <group ref={groupRef}>
       {Array.from({ length: CAP }).map((_, i) => (
         <mesh key={i} visible={false}>
-          <sphereGeometry args={[0.15, 8, 8]} />
+          <sphereGeometry args={[0.22, 8, 8]} />
           <meshBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// ===== Sparks (bright fast-fading points for explosive reactions) =====
+function Sparks({ trigger, y, color }: { trigger: number; y: number; color: THREE.Color }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const sparks = useRef<{ x: number; y: number; z: number; vx: number; vy: number; vz: number; life: number }[]>([]);
+
+  useEffect(() => {
+    if (trigger <= 0) return;
+    for (let i = 0; i < 60; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const el = Math.random() * Math.PI * 0.5;
+      const sp = 1.5 + Math.random() * 2.5;
+      sparks.current.push({
+        x: 0, y: 0, z: 0,
+        vx: Math.cos(a) * Math.cos(el) * sp,
+        vy: Math.sin(el) * sp + 1,
+        vz: Math.sin(a) * Math.cos(el) * sp,
+        life: 0.6 + Math.random() * 0.4,
+      });
+    }
+  }, [trigger]);
+
+  useFrame((_, delta) => {
+    sparks.current = sparks.current.filter((s) => {
+      s.vy -= delta * 4;
+      s.x += s.vx * delta;
+      s.y += s.vy * delta;
+      s.z += s.vz * delta;
+      s.life -= delta * 1.5;
+      return s.life > 0;
+    });
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const s = sparks.current[i];
+      const m = child as THREE.Mesh;
+      if (s) {
+        m.position.set(s.x, y + s.y, s.z);
+        const scl = Math.max(0.1, s.life) * 0.8;
+        m.scale.setScalar(scl);
+        (m.material as THREE.MeshBasicMaterial).opacity = Math.max(0, s.life);
+        m.visible = true;
+      } else m.visible = false;
+    });
+  });
+  return (
+    <group ref={groupRef}>
+      {Array.from({ length: 80 }).map((_, i) => (
+        <mesh key={i} visible={false}>
+          <sphereGeometry args={[0.04, 6, 6]} />
+          <meshBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// ===== Shockwave (expanding ring for explosive reactions) =====
+function Shockwave({ trigger, y, color }: { trigger: number; y: number; color: THREE.Color }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const start = useRef(0);
+  const active = useRef(false);
+  useEffect(() => {
+    if (trigger > 0) { start.current = performance.now(); active.current = true; }
+  }, [trigger]);
+  useFrame(() => {
+    if (!meshRef.current || !active.current) return;
+    const t = (performance.now() - start.current) / 900;
+    if (t > 1) { meshRef.current.visible = false; active.current = false; return; }
+    meshRef.current.visible = true;
+    const s = 0.3 + t * 4;
+    meshRef.current.scale.set(s, s, s);
+    (meshRef.current.material as THREE.MeshBasicMaterial).opacity = (1 - t) * 0.9;
+  });
+  return (
+    <mesh ref={meshRef} position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+      <ringGeometry args={[0.3, 0.5, 48]} />
+      <meshBasicMaterial color={color} transparent opacity={0} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+// ===== Foam overflow (frothy bubbles spilling over beaker rim) =====
+function FoamOverflow({ intensity, y, color }: { intensity: number; y: number; color: THREE.Color }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const foam = useRef<{ ang: number; r: number; y: number; vy: number; life: number; size: number }[]>([]);
+  const spawnAcc = useRef(0);
+  const CAP = 120;
+  useFrame((_, delta) => {
+    spawnAcc.current += delta * intensity * 60;
+    while (spawnAcc.current > 1 && foam.current.length < CAP) {
+      spawnAcc.current -= 1;
+      const ang = Math.random() * Math.PI * 2;
+      foam.current.push({
+        ang, r: 0.72 + Math.random() * 0.05,
+        y: 0, vy: -0.4 - Math.random() * 0.6,
+        life: 1, size: 0.08 + Math.random() * 0.1,
+      });
+    }
+    foam.current = foam.current.filter((f) => {
+      f.vy -= delta * 1.5;
+      f.y += f.vy * delta;
+      f.r += delta * 0.15;
+      f.life -= delta * 0.6;
+      return f.life > 0 && f.y > -1.5;
+    });
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const f = foam.current[i];
+      const m = child as THREE.Mesh;
+      if (f) {
+        m.position.set(Math.cos(f.ang) * f.r, y + f.y, Math.sin(f.ang) * f.r);
+        m.scale.setScalar(f.size);
+        m.visible = true;
+      } else m.visible = false;
+    });
+  });
+  return (
+    <group ref={groupRef}>
+      {Array.from({ length: CAP }).map((_, i) => (
+        <mesh key={i} visible={false}>
+          <sphereGeometry args={[1, 8, 8]} />
+          <meshPhysicalMaterial color={color} transparent opacity={0.85} roughness={0.3} transmission={0.4} />
         </mesh>
       ))}
     </group>
@@ -256,7 +388,7 @@ function LiquidSurface({ y, radius, color, stirring }: { y: number; radius: numb
 
 // ===== Beaker =====
 function BeakerMesh({
-  state, bubbleIntensity, steamIntensity, splashTrigger, splashColor, glowIntensity, stirIntensity, flashColor,
+  state, bubbleIntensity, steamIntensity, splashTrigger, splashColor, glowIntensity, stirIntensity, flashColor, sparkTrigger, sparkColor, shockTrigger, foamIntensity,
 }: {
   state: BeakerState;
   bubbleIntensity: number;
@@ -266,6 +398,10 @@ function BeakerMesh({
   glowIntensity: number;
   stirIntensity: number;
   flashColor: THREE.Color | null;
+  sparkTrigger: number;
+  sparkColor: THREE.Color;
+  shockTrigger: number;
+  foamIntensity: number;
 }) {
   const targetHeight = Math.min(1.4, (state.totalVolumeMl / 100) * 1.4);
   const [fillHeight, setFillHeight] = useState(targetHeight);
@@ -317,10 +453,15 @@ function BeakerMesh({
           <Bubbles intensity={bubbleIntensity} maxY={fillHeight} />
           <SplashRing trigger={splashTrigger} y={fillHeight - 0.72} color={splashColor} />
           <Droplets trigger={splashTrigger} y={fillHeight - 0.72} color={splashColor} />
+          <Sparks trigger={sparkTrigger} y={fillHeight - 0.7} color={sparkColor} />
+          <Shockwave trigger={shockTrigger} y={fillHeight - 0.7} color={sparkColor} />
+          <FoamOverflow intensity={foamIntensity} y={fillHeight - 0.75} color={displayColor} />
         </>
       )}
       {/* steam ABOVE liquid */}
       <Steam intensity={steamIntensity} y={fillHeight - 0.6} />
+      {steamIntensity > 0.4 && <Steam intensity={steamIntensity * 0.7} y={fillHeight - 0.4} color="#e2e8f0" />}
+      {/* solid base */}
       {/* solid base */}
       <mesh position={[0, -0.8, 0]}>
         <cylinderGeometry args={[0.76, 0.76, 0.04, 48]} />
@@ -476,6 +617,8 @@ export function LabScene({
   const [lastAdded, setLastAdded] = useState<ReagentId | null>(null);
   const [pourTrigger, setPourTrigger] = useState(0);
   const [splashTrigger, setSplashTrigger] = useState(0);
+  const [sparkTrigger, setSparkTrigger] = useState(0);
+  const [shockTrigger, setShockTrigger] = useState(0);
 
   useEffect(() => {
     const kind = detectReaction(prevState.current, state);
@@ -496,23 +639,32 @@ export function LabScene({
   const [glowIntensity, setGlowIntensity] = useState(0);
   const [stirIntensity, setStirIntensity] = useState(0);
   const [flashColor, setFlashColor] = useState<THREE.Color | null>(null);
+  const [foamIntensity, setFoamIntensity] = useState(0);
+  const [sparkColor, setSparkColor] = useState<THREE.Color>(() => new THREE.Color("#ffffff"));
 
   // React to reaction
   useEffect(() => {
     if (reaction === "none") return;
-    // Configure per-reaction effect profile
-    const profile: Record<Exclude<ReactionKind, "none">, { bubbles: number; steam: number; glow: number; duration: number; flash: string | null }> = {
-      dissolve:   { bubbles: 0.4, steam: 0.0, glow: 0.5, duration: 2500, flash: null },
-      fizz:       { bubbles: 1.0, steam: 0.3, glow: 0.7, duration: 3000, flash: null },
-      neutralize: { bubbles: 0.9, steam: 0.9, glow: 0.9, duration: 3500, flash: "#fef08a" },
-      indicator:  { bubbles: 0.5, steam: 0.2, glow: 1.0, duration: 3000, flash: "#f472b6" },
-      splash:     { bubbles: 0.3, steam: 0.0, glow: 0.4, duration: 1500, flash: null },
+    // Configure per-reaction effect profile (dramatic real-life feel)
+    const profile: Record<Exclude<ReactionKind, "none">, { bubbles: number; steam: number; glow: number; foam: number; duration: number; flash: string | null; spark: boolean; shock: boolean; sparkColor: string }> = {
+      dissolve:   { bubbles: 0.6, steam: 0.1, glow: 0.5, foam: 0.0, duration: 2800, flash: null,      spark: false, shock: false, sparkColor: "#ffffff" },
+      fizz:       { bubbles: 1.8, steam: 0.6, glow: 0.8, foam: 0.4, duration: 3500, flash: "#fef3c7", spark: false, shock: true,  sparkColor: "#fde68a" },
+      neutralize: { bubbles: 2.2, steam: 1.4, glow: 1.2, foam: 0.9, duration: 4200, flash: "#fef08a", spark: true,  shock: true,  sparkColor: "#fbbf24" },
+      indicator:  { bubbles: 0.9, steam: 0.3, glow: 1.4, foam: 0.2, duration: 3200, flash: "#f472b6", spark: true,  shock: false, sparkColor: "#ec4899" },
+      splash:     { bubbles: 0.5, steam: 0.0, glow: 0.4, foam: 0.0, duration: 1500, flash: null,      spark: false, shock: false, sparkColor: "#ffffff" },
     };
     const p = profile[reaction];
     setBubbleIntensity(p.bubbles);
     setSteamIntensity(p.steam);
     setGlowIntensity(p.glow);
+    setFoamIntensity(p.foam);
     if (p.flash) setFlashColor(new THREE.Color(p.flash));
+    setSparkColor(new THREE.Color(p.sparkColor));
+    // Trigger burst effects slightly delayed to line up with landing
+    setTimeout(() => {
+      if (p.spark) setSparkTrigger((n) => n + 1);
+      if (p.shock) setShockTrigger((n) => n + 1);
+    }, 520);
     const start = performance.now();
     let raf: number;
     const tick = () => {
@@ -521,6 +673,7 @@ export function LabScene({
       setBubbleIntensity(p.bubbles * k);
       setSteamIntensity(p.steam * k);
       setGlowIntensity(p.glow * k);
+      setFoamIntensity(p.foam * Math.max(0, k - 0.3));
       if (k > 0) raf = requestAnimationFrame(tick);
       else setFlashColor(null);
     };
@@ -592,6 +745,10 @@ export function LabScene({
         glowIntensity={glowIntensity}
         stirIntensity={stirIntensity}
         flashColor={flashColor}
+        sparkTrigger={sparkTrigger}
+        sparkColor={sparkColor}
+        shockTrigger={shockTrigger}
+        foamIntensity={foamIntensity}
       />
       {bottles.map((b) => (
         <ReagentBottle
