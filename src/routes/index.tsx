@@ -23,11 +23,8 @@ function Landing() {
           <Link to="/tentang" className="hover:text-foreground">Tentang</Link>
         </nav>
         <div className="flex gap-2">
-          <Button variant="ghost" asChild>
-            <Link to="/auth">Masuk</Link>
-          </Button>
           <Button asChild>
-            <Link to="/auth">Mulai Gratis</Link>
+            <Link to="/dashboard">Mulai Praktikum</Link>
           </Button>
         </div>
       </header>
