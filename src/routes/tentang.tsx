@@ -331,7 +331,7 @@ function TentangPage() {
             dan jalankan modul titrasi untuk melihat reaksi netralisasi secara langsung.
           </p>
           <Button size="lg" asChild className="mt-6 glow-primary">
-            <Link to="/auth">
+            <Link to="/dashboard">
               Mulai Praktikum <ArrowRight className="ml-1.5 size-4" />
             </Link>
           </Button>
@@ -549,7 +549,7 @@ function Box({
 
 function UserFlowDiagram() {
   const steps = [
-    { t: "Login", d: "email / Google" },
+    { t: "Buka aplikasi", d: "tanpa login" },
     { t: "Dashboard", d: "pilih modul" },
     { t: "Petunjuk", d: "baca tujuan & safety" },
     { t: "Simulasi 3D", d: "ambil, tuang, aduk" },
