@@ -327,7 +327,7 @@ function TentangPage() {
             Coba sendiri Reaction Engine-nya
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Semua yang dijelaskan di halaman ini sudah berjalan di aplikasi. Masuk
+            Semua yang dijelaskan di halaman ini sudah berjalan di aplikasi. Buka dashboard
             dan jalankan modul titrasi untuk melihat reaksi netralisasi secara langsung.
           </p>
           <Button size="lg" asChild className="mt-6 glow-primary">
