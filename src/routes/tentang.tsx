@@ -48,15 +48,12 @@ function TentangPage() {
           <span className="font-display text-xl font-semibold">ChemXR</span>
         </Link>
         <nav className="hidden gap-6 text-sm text-muted-foreground md:flex">
-          <Link to="/" className="hover:text-foreground">Beranda</Link>
+          <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
           <Link to="/tentang" className="text-foreground">Tentang</Link>
         </nav>
         <div className="flex gap-2">
-          <Button variant="ghost" asChild>
-            <Link to="/auth">Masuk</Link>
-          </Button>
           <Button asChild>
-            <Link to="/auth">Coba Sekarang</Link>
+            <Link to="/dashboard">Mulai Praktikum</Link>
           </Button>
         </div>
       </header>
