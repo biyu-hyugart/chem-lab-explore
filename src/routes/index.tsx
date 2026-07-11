@@ -50,7 +50,7 @@ function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild className="glow-primary">
-                <Link to="/auth">Mulai Praktikum</Link>
+                <Link to="/dashboard">Mulai Praktikum</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <a href="#cara-kerja">Lihat Cara Kerja</a>
@@ -124,7 +124,7 @@ function Landing() {
           <h2 className="font-display text-3xl font-bold md:text-4xl">Cara kerja</h2>
           <div className="mt-10 grid gap-4 md:grid-cols-4">
             {[
-              { n: "1", t: "Masuk", d: "Daftar cepat via email atau Google." },
+              { n: "1", t: "Buka aplikasi", d: "Langsung akses tanpa perlu login." },
               { n: "2", t: "Pilih modul", d: "Pilih praktikum sesuai materi yang ingin dipelajari." },
               { n: "3", t: "Simulasi 3D", d: "Ikuti langkah, ambil zat, tuang, aduk, amati reaksi." },
               { n: "4", t: "Evaluasi", d: "Lihat hasil, skor, dan penjelasan pembelajaran." },
@@ -155,7 +155,7 @@ function Landing() {
           </div>
           <div className="mt-10 flex justify-center">
             <Button size="lg" asChild>
-              <Link to="/auth">Coba Sekarang</Link>
+              <Link to="/dashboard">Coba Sekarang</Link>
             </Button>
           </div>
         </section>
