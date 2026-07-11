@@ -48,15 +48,12 @@ function TentangPage() {
           <span className="font-display text-xl font-semibold">ChemXR</span>
         </Link>
         <nav className="hidden gap-6 text-sm text-muted-foreground md:flex">
-          <Link to="/" className="hover:text-foreground">Beranda</Link>
+          <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
           <Link to="/tentang" className="text-foreground">Tentang</Link>
         </nav>
         <div className="flex gap-2">
-          <Button variant="ghost" asChild>
-            <Link to="/auth">Masuk</Link>
-          </Button>
           <Button asChild>
-            <Link to="/auth">Coba Sekarang</Link>
+            <Link to="/dashboard">Mulai Praktikum</Link>
           </Button>
         </div>
       </header>
@@ -330,11 +327,11 @@ function TentangPage() {
             Coba sendiri Reaction Engine-nya
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Semua yang dijelaskan di halaman ini sudah berjalan di aplikasi. Masuk
+            Semua yang dijelaskan di halaman ini sudah berjalan di aplikasi. Buka dashboard
             dan jalankan modul titrasi untuk melihat reaksi netralisasi secara langsung.
           </p>
           <Button size="lg" asChild className="mt-6 glow-primary">
-            <Link to="/auth">
+            <Link to="/dashboard">
               Mulai Praktikum <ArrowRight className="ml-1.5 size-4" />
             </Link>
           </Button>
@@ -552,7 +549,7 @@ function Box({
 
 function UserFlowDiagram() {
   const steps = [
-    { t: "Login", d: "email / Google" },
+    { t: "Buka aplikasi", d: "tanpa login" },
     { t: "Dashboard", d: "pilih modul" },
     { t: "Petunjuk", d: "baca tujuan & safety" },
     { t: "Simulasi 3D", d: "ambil, tuang, aduk" },
